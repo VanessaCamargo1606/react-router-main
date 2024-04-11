@@ -1,11 +1,5 @@
-import {
-  Form,
-  useLoaderData,
-  useFetcher,
-} from "react-router-dom";
-
+import { Form, useLoaderData, useFetcher } from "react-router-dom";
 import { getContact, updateContact } from "../contacts";
-
 
 export async function loader({ params }) {
   const contact = await getContact(params.contactId);
@@ -26,22 +20,14 @@ export async function action({ request, params }) {
 }
 
 export default function Contact() {
-
-  //const { contact } = useLoaderData();
-  const contact = {
-    first: "Your",
-    last: "Name",
-    avatar: "https://placekitten.com/g/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  };
+  const { contact } = useLoaderData();
 
   return (
     <div id="contact">
       <div>
         <img
           key={contact.avatar}
+          alt={`render contact ${contact.first}`}
           src={contact.avatar || null}
         />
       </div>
@@ -50,7 +36,7 @@ export default function Contact() {
         <h1>
           {contact.first || contact.last ? (
             <>
-            { contact.first } { contact.last }
+              {contact.first} {contact.last}
             </>
           ) : (
             <i>No Name</i>
@@ -62,6 +48,7 @@ export default function Contact() {
           <p>
             <a
               target="_blank"
+              rel="noreferrer"
               href={`https://twitter.com/${contact.twitter}`}
             >
               {contact.twitter}
@@ -79,11 +66,10 @@ export default function Contact() {
             method="post"
             action="destroy"
             onSubmit={(event) => {
-              if (
-                !window.confirm(   //ERROR
-                  "Please confirm you want to delete this record."
-                )
-              ) {
+              let _confirm = !window.confirm(
+                "Please confirm you want to delete this record."
+              );
+              if (_confirm) {
                 event.preventDefault();
               }
             }}
@@ -97,9 +83,7 @@ export default function Contact() {
 }
 
 function Favorite({ contact }) {
-
   const fetcher = useFetcher();
-  // yes, this is a `let` for later
   let favorite = contact.favorite;
   if (fetcher.formData) {
     favorite = fetcher.formData.get("favorite") === "true";
@@ -110,11 +94,7 @@ function Favorite({ contact }) {
       <button
         name="favorite"
         value={favorite ? "false" : "true"}
-        aria-label={
-          favorite
-            ? "Remove from favorites"
-            : "Add to favorites"
-        }
+        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
       >
         {favorite ? "★" : "☆"}
       </button>
